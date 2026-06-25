@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Калькулятор бонусов сотрудников</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: #eef2f5;
+            padding: 20px 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            padding: 24px 20px 32px;
+        }
+
+        .header {
+            margin-bottom: 28px;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 16px;
+        }
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 700;
+            color: #1a2c3e;
+            letter-spacing: -0.3px;
+            margin-bottom: 6px;
+        }
+        .subhead {
+            color: #5e6f8d;
+            font-size: 0.9rem;
+        }
+
+        .row-split {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        .card {
+            flex: 1;
+            min-width: 260px;
+            background: #f9fafc;
+            border-radius: 24px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e2f41;
+            margin-bottom: 18px;
+            border-left: 4px solid #4a90d9;
+            padding-left: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            gap: 12px;
+        }
+        .input-group label {
+            font-weight: 500;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        .input-group input {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 60px;
+            padding: 10px 18px;
+            width: 130px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            color: #0f172a;
+            outline: none;
+            transition: 0.15s;
+        }
+        .input-group input:focus {
+            border-color: #4a90d9;
+            box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+        }
+
+        .toggle-area {
+            background: #ffffff;
+            border-radius: 20px;
+            margin-top: 12px;
+        }
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 10px 6px;
+            border-bottom: 1px solid #eef2f6;
+        }
+        .toggle-item:last-child {
+            border-bottom: none;
+        }
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #1f3448;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.2s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #4a90d9;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        .skip-area {
+            background: #f0f4fe;
+            border-radius: 20px;
+            padding: 12px 16px;
+            margin: 15px 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid #b8d0f0;
+        }
+        .skip-label {
+            font-weight: 600;
+            color: #2c5282;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .skip-label input {
+            width: 20px;
+            height: 20px;
+            accent-color: #4a90d9;
+            cursor: pointer;
+        }
+
+        .total-panel {
+            background: #1a2c3e;
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin: 20px 0 20px;
+            text-align: center;
+            color: white;
+        }
+        .total-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 400;
+            color: #b0c8e0;
+        }
+        .total-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #ffdd99;
+            line-height: 1.2;
+        }
+        .reset-btn {
+            background: rgba(255,255,240,0.12);
+            border: 1px solid #b8d0f0;
+            padding: 8px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #e6f0ff;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: 0.15s;
+        }
+        .reset-btn:hover {
+            background: #b8d0f0;
+            color: #1a2c3e;
+        }
+
+        .details {
+            background: #f8f9fe;
+            border-radius: 20px;
+            padding: 16px 18px;
+            font-size: 0.85rem;
+            color: #2d3e5a;
+            border: 1px solid #e9edf2;
+            margin-top: 10px;
+            line-height: 1.45;
+            font-family: monospace;
+        }
+        .badge-mini {
+            font-size: 0.7rem;
+            background: #e9edf4;
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            color: #1f3a5f;
+        }
+        hr {
+            margin: 14px 0;
+            border: none;
+            border-top: 1px solid #dce2ec;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .inline-code {
+            font-weight: 700;
+            color: #1f6bb8;
+        }
+
+        @media (max-width: 700px) {
+            .container { padding: 18px 14px; }
+            h1 { font-size: 1.5rem; }
+            .total-amount { font-size: 2.4rem; }
+            .card { padding: 14px; }
+        }
+        button {
+            background: none;
+            border: none;
+        }
+        .hint-icon {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📊 Калькулятор вознаграждения</h1>
+        <div class="subhead">Оклад + бонус за активность + прогрессивные бонусы за выполнение показателей</div>
+    </div>
+
+    <div class="row-split">
+        <!-- Левая карточка: основные показатели -->
+        <div class="card">
+            <h2>📋 Ввод показателей</h2>
+            <div class="input-group">
+                <label>✅ Количество выполненных задач:</label>
+                <input type="number" id="tasksCount" value="2" min="0" step="1">
+            </div>
+            <div class="input-group">
+                <label>💰 Количество привлечённых клиентов:</label>
+                <input type="number" id="clientsCount" value="3" min="0" step="1">
+            </div>
+            <div class="skip-area">
+                <div class="skip-label">
+                    📌 <span>Есть пропуски в работе</span>
+                </div>
+                <input type="checkbox" id="skipPenalty">
+                <span class="badge-mini">отключает штраф, если выполнено 0 задач</span>
+            </div>
+            <div class="badge-mini" style="margin-top: 8px; background:#e9edf4;">
+                ⚡ Правило оклада: 2 задачи → 600, 4+ задачи → 700, иначе 500
+            </div>
+        </div>
+
+        <!-- Правая карточка: управление бонусами -->
+        <div class="card">
+            <h2>🎛️ Бонусы (вкл/выкл)</h2>
+            <div class="toggle-area">
+                <div class="toggle-item">
+                    <div class="toggle-label"><span>🏅</span> Бонус за задачи (прогрессивная шкала)</div>
+                    <label class="switch">
+                        <input type="checkbox" id="enableTaskBonus" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-label"><span>💎</span> Бонус за клиентов (от 1 до 10+)</div>
+                    <label class="switch">
+                        <input type="checkbox" id="enableClientBonus" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-label"><span>📅</span> Бонус за активность (+100)</div>
+                    <label class="switch">
+                        <input type="checkbox" id="enableActivityBonus" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-item">
+                    <div class="toggle-label"><span>⚡</span> Повышенный оклад (за 2 или 4+ задач)</div>
+                    <label class="switch">
+                        <input type="checkbox" id="enableRateBonus" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="badge-mini" style="margin-top: 12px; display: block; text-align: center;">
+                🔘 Отключите любой бонус — он не войдёт в расчёт
+            </div>
+        </div>
+    </div>
+
+    <!-- Предпросмотр -->
+    <div class="flex-between" style="margin: 8px 0 12px; gap: 12px;">
+        <div class="badge-mini" style="background:#e9edf4;">📈 Бонус за задачи: <span id="taskRawPreview">0</span>$</div>
+        <div class="badge-mini" style="background:#e9edf4;">💸 Бонус за клиентов: <span id="clientRawPreview">0</span>$</div>
+        <div class="badge-mini" style="background:#e9edf4;">🏦 Базовый оклад: <span id="baseRatePreview">500</span>$</div>
+    </div>
+
+    <!-- Итог -->
+    <div class="total-panel">
+        <div class="total-label">ИТОГОВОЕ ВОЗНАГРАЖДЕНИЕ</div>
+        <div class="total-amount" id="totalSalary">0 $</div>
+        <button class="reset-btn" id="refreshBtn">⟳ Пересчитать</button>
+    </div>
+
+    <!-- Детали -->
+    <div class="details" id="calculationDetails">
+        ⚙️ Введите данные и настройте бонусы — калькулятор покажет полную формулу.
+    </div>
+    <div style="font-size: 11px; text-align: center; margin-top: 20px; color: #6c7a91;">
+        * Бонус за задачи: 1→15, 2→70, 3→105, 4→95, 5→95, 6→95, 7→95, 8→95 (далее +95 за каждую). Бонус за клиентов: 1→30, 2→50, 3→250, 4→300, 5→330, 6→380, 7→400, 8→450, 9→500, 10→600 (свыше 10 → +600 за каждого). Штраф 135$ если задач = 0 и нет пропусков.
+    </div>
+</div>
+
+<script>
+    // ----- Таблицы бонусов (кумулятивные суммы) -----
+    const clientBonusMap = {
+        1: 30, 2: 50, 3: 250, 4: 300, 5: 330, 6: 380, 7: 400, 8: 450, 9: 500, 10: 600
+    };
+    const taskBonusMap = {
+        1: 15, 2: 70, 3: 105, 4: 95, 5: 95, 6: 95, 7: 95, 8: 95
+    };
+
+    // Суммарный бонус за клиентов (кумулятивно)
+    function getTotalClientBonus(clients) {
+        if (clients <= 0) return 0;
+        let total = 0;
+        for (let i = 1; i <= clients; i++) {
+            if (i <= 10) total += clientBonusMap[i];
+            else total += clientBonusMap[10];
+        }
+        return total;
+    }
+
+    // Суммарный бонус за задачи (кумулятивно)
+    function getTotalTaskBonus(tasks) {
+        if (tasks <= 0) return 0;
+        let total = 0;
+        for (let i = 1; i <= tasks; i++) {
+            if (i <= 8) total += taskBonusMap[i];
+            else total += taskBonusMap[8];
+        }
+        return total;
+    }
+
+    // Базовый оклад в зависимости от количества задач
+    function getBaseRateByTasks(tasks, enableRateBonus) {
+        if (!enableRateBonus) return 500;
+        if (tasks >= 4) return 700;
+        if (tasks === 2 || tasks === 3) return 600;
+        return 500;
+    }
+
+    // Главный расчёт
+    function calculate() {
+        let tasks = parseInt(document.getElementById('tasksCount').value) || 0;
+        let clients = parseInt(document.getElementById('clientsCount').value) || 0;
+        let hasSkip = document.getElementById('skipPenalty').checked;
+
+        if (tasks < 0) tasks = 0;
+        if (clients < 0) clients = 0;
+
+        const enableTaskBonus = document.getElementById('enableTaskBonus').checked;
+        const enableClientBonus = document.getElementById('enableClientBonus').checked;
+        const enableActivity = document.getElementById('enableActivityBonus').checked;
+        const enableRateUpgrade = document.getElementById('enableRateBonus').checked;
+
+        // Бонусы
+        let taskBonusValue = enableTaskBonus ? getTotalTaskBonus(tasks) : 0;
+        let clientBonusValue = enableClientBonus ? getTotalClientBonus(clients) : 0;
+        let activityBonus = enableActivity ? 100 : 0;
+        let workRate = getBaseRateByTasks(tasks, enableRateUpgrade);
+
+        // Штраф
+        let penalty = 0;
+        if (tasks === 0 && !hasSkip) {
+            penalty = 135;
+        }
+
+        let total = workRate + activityBonus + taskBonusValue + clientBonusValue - penalty;
+
+        // Предпросмотр
+        document.getElementById('taskRawPreview').innerText = getTotalTaskBonus(tasks);
+        document.getElementById('clientRawPreview').innerText = getTotalClientBonus(clients);
+        let rateDisplay = getBaseRateByTasks(tasks, true);
+        if (!enableRateUpgrade) {
+            document.getElementById('baseRatePreview').innerHTML = '500 (повышение откл.)';
+        } else {
+            document.getElementById('baseRatePreview').innerHTML = rateDisplay;
+        }
+
+        document.getElementById('totalSalary').innerHTML = total.toFixed(2) + " $";
+
+        // Детали
+        showDetails(workRate, activityBonus, taskBonusValue, clientBonusValue, penalty, tasks, clients, hasSkip,
+                    enableTaskBonus, enableClientBonus, enableActivity, enableRateUpgrade);
+    }
+
+    function showDetails(rate, activity, taskBonus, clientBonus, penalty, tasks, clients, hasSkip,
+                         taskEnabled, clientEnabled, activityEnabled, rateEnabled) {
+        const detailsDiv = document.getElementById('calculationDetails');
+
+        let rateExplanation = `${rate} $`;
+        if (rateEnabled) {
+            if (tasks >= 4) rateExplanation += ` (оклад 700$, т.к. задач ${tasks} >=4)`;
+            else if (tasks === 2 || tasks === 3) rateExplanation += ` (оклад 600$, задач ${tasks})`;
+            else rateExplanation += ` (базовый оклад 500$, задач ${tasks})`;
+        } else {
+            rateExplanation += ` (повышение оклада отключено)`;
+        }
+
+        let activityText = activityEnabled ? `+ ${activity} $ (бонус за активность)` : `0 $ (бонус за активность выключен)`;
+        let taskText = taskEnabled ? `+ ${taskBonus} $ (бонус за задачи, выполнено ${tasks})` : `0 $ (бонус за задачи отключён)`;
+        let clientText = clientEnabled ? `+ ${clientBonus} $ (бонус за клиентов, привлечено ${clients})` : `0 $ (бонус за клиентов отключён)`;
+
+        let penaltyText = "";
+        if (penalty > 0) penaltyText = `− ${penalty} $ (штраф за 0 задач, пропусков нет)`;
+        else if (tasks === 0 && !hasSkip) penaltyText = `⚠️ штраф 135$ (0 задач, нет пропусков) — применён`;
+        else if (tasks === 0 && hasSkip) penaltyText = `✅ штраф 135$ не применяется (есть пропуски)`;
+        else penaltyText = `✔ штраф отсутствует (задач > 0)`;
+
+        let totalVal = rate + activity + taskBonus + clientBonus - penalty;
+
+        detailsDiv.innerHTML = `
+            <strong>📐 Пошаговый расчёт:</strong><br>
+            🧾 <strong>Оклад</strong> = ${rateExplanation}<br>
+            🧾 <strong>Активность</strong> = ${activityText}<br>
+            🎯 <strong>Бонус за задачи</strong> = ${taskText}<br>
+            💎 <strong>Бонус за клиентов</strong> = ${clientText}<br>
+            ⚖️ <strong>Штраф</strong> = ${penaltyText}<br>
+            <hr>
+            🔹 <strong>Итоговая формула:</strong> ${rate} + ${activity} + ${taskBonus} + ${clientBonus} - ${penalty} = <span style="color:#1f6bb8; font-weight:bold;">${totalVal} $</span><br>
+            <span class="badge-mini">🔘 Бонусы можно отключать — каждый суммируется отдельно.</span>
+        `;
+    }
+
+    function refresh() {
+        calculate();
+    }
+
+    const elements = ['tasksCount', 'clientsCount', 'skipPenalty', 'enableTaskBonus', 'enableClientBonus', 'enableActivityBonus', 'enableRateBonus'];
+    elements.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', refresh);
+            if (el.type === 'checkbox') el.addEventListener('change', refresh);
+        }
+    });
+    document.getElementById('refreshBtn').addEventListener('click', refresh);
+
+    window.addEventListener('DOMContentLoaded', refresh);
+</script>
+</body>
+</html>
